@@ -18,8 +18,10 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	logging "github.com/ipfs/go-log"
 	"github.com/libp2p/go-libp2p-core/peer"
-	"github.com/status-im/go-waku/waku/v2/node"
-	"github.com/status-im/go-waku/waku/v2/protocol/store"
+
+	// TODO Replace with wrapper
+	// "github.com/status-im/go-waku/waku/v2/node"
+	// "github.com/status-im/go-waku/waku/v2/protocol/store"
 )
 
 var DefaultContentTopic string = "/toy-chat/2/huilong/proto"
@@ -58,25 +60,32 @@ func main() {
 	prvKey, err := crypto.HexToECDSA(nodekey)
 
 	ctx := context.Background()
-	wakuNode, err := node.New(ctx,
-		node.WithPrivateKey(prvKey),
-		node.WithHostAddress([]net.Addr{hostAddr}),
-		node.WithWakuRelay(),
-		node.WithWakuStore(false),
-	)
-	if err != nil {
-		fmt.Print(err)
-		return
-	}
+	// TODO Replace with wrapper
+	// wakuNode, err := node.New(ctx,
+	// 	node.WithPrivateKey(prvKey),
+	// 	node.WithHostAddress([]net.Addr{hostAddr}),
+	// 	node.WithWakuRelay(),
+	// 	node.WithWakuStore(false),
+	// )
+	// if err != nil {
+	// 	fmt.Print(err)
+	// 	return
+	// }
 
 	// use the nickname from the cli flag, or a default if blank
 	nick := *nickFlag
 	if len(nick) == 0 {
-		nick = defaultNick(wakuNode.Host().ID())
+		// TODO Replace with wrapper, need additional support in WakuInfo JSON-RPC response
+		// For now random string
+		// nick = defaultNick(wakuNode.Host().ID())
+		nick = defaultNick("go-nwaku-test")
 	}
 
 	// join the chat
-	chat, err := NewChat(wakuNode, wakuNode.Host().ID(), *contentTopicFlag, *payloadV1Flag, nick)
+	// Same as above
+	//chat, err := NewChat(wakuNode, wakuNode.Host().ID(), *contentTopicFlag, *payloadV1Flag, nick)
+	// TODO Replace wakuNode
+	chat, err := NewChat(wakuNode, "go-nwaku-test", *contentTopicFlag, *payloadV1Flag, nick)
 	if err != nil {
 		panic(err)
 	}
@@ -107,6 +116,7 @@ func main() {
 			staticnode = getRandomFleetNode(fleetData, *fleetFlag)
 		}
 
+		// TODO Call with JSON RPC
 		err = wakuNode.DialPeer(staticnode)
 		if err != nil {
 			ui.displayMessage("Could not connect to peer: " + err.Error())
@@ -121,6 +131,7 @@ func main() {
 			storenode = getRandomFleetNode(fleetData, *fleetFlag)
 		}
 
+		// TODO Call with JSON RPC
 		storeNodeId, err := wakuNode.AddStorePeer(storenode)
 		if err != nil {
 			ui.displayMessage("Could not connect to storenode: " + err.Error())
@@ -133,6 +144,7 @@ func main() {
 		ui.displayMessage("Querying historic messages")
 
 		tCtx, _ := context.WithTimeout(ctx, 5*time.Second)
+		// TODO Call with JSON RPC
 		response, err := wakuNode.Query(tCtx, []string{*contentTopicFlag}, 0, 0,
 			store.WithAutomaticRequestId(),
 			store.WithPeer(*storeNodeId),
