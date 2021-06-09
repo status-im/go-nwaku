@@ -16,3 +16,12 @@ JSON RPC spec that nim-waku exposes: https://rfc.vac.dev/spec/16/
 ## Running
 
 - (Temp) Ensure you have `wakunode2` nim-waku in the `bin` directory
+
+## API calls used by chat2
+
+- DialPeer
+- AddStorePeer
+- Query
+- Subscribe
+- Publish
+- ListPeers
