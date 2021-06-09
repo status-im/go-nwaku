@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"time"
+	"log"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/libp2p/go-libp2p-core/peer"
@@ -21,7 +22,8 @@ type Chat struct {
 	Messages chan *pb.Chat2Message
 
 	sub  *node.Subscription
-	node *node.WakuNode
+	// TODO Replace with wrapper
+	//node *node.WakuNode
 
 	self         peer.ID
 	contentTopic string
@@ -31,16 +33,17 @@ type Chat struct {
 
 // NewChat tries to subscribe to the PubSub topic for the room name, returning
 // a ChatRoom on success.
-func NewChat(n *node.WakuNode, selfID peer.ID, contentTopic string, useV1Payload bool, nickname string) (*Chat, error) {
+func NewChat(selfID peer.ID, contentTopic string, useV1Payload bool, nickname string) (*Chat, error) {
 	// join the default waku topic and subscribe to it
-	sub, err := n.Subscribe(nil)
-	if err != nil {
-		return nil, err
-	}
+	//  TODO Do this with JSON RPC
+	// sub, err := n.Subscribe(nil)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	c := &Chat{
-		node:         n,
-		sub:          sub,
+		//node:         n,
+		//sub:          sub,
 		self:         selfID,
 		contentTopic: contentTopic,
 		nick:         nickname,
@@ -103,7 +106,9 @@ func (cr *Chat) Publish(ctx context.Context, message string) error {
 		Timestamp:    timestamp,
 	}
 
-	_, err = cr.node.Publish(ctx, wakuMsg, nil)
+	// TODO Replace with jSON RPC
+	//_, err = cr.node.Publish(ctx, wakuMsg, nil)
+	log.Printf("NYI Publish", wakuMsg)
 
 	return err
 }
@@ -133,9 +138,10 @@ func (cr *Chat) decodeMessage(wakumsg *wpb.WakuMessage) {
 
 // readLoop pulls messages from the pubsub topic and pushes them onto the Messages channel.
 func (cr *Chat) readLoop() {
-	for value := range cr.sub.C {
-		cr.decodeMessage(value.Message())
-	}
+	// TODO Replace with JSON RPC
+	// for value := range cr.sub.C {
+	// 	cr.decodeMessage(value.Message())
+	// }
 }
 
 func (cr *Chat) displayMessages(messages []*wpb.WakuMessage) {

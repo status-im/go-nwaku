@@ -10,7 +10,9 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
-	"github.com/status-im/go-waku/waku/v2/protocol/relay"
+
+	// TODO Replace with JSON RPC
+	//"github.com/status-im/go-waku/waku/v2/protocol/relay"
 )
 
 // ChatUI is a Text User Interface (TUI) for a ChatRoom.
@@ -77,31 +79,33 @@ func NewChatUI(ctx context.Context, chat *Chat) *ChatUI {
 		}
 
 		// add peer
-		if strings.HasPrefix(line, "/connect ") {
-			peer := strings.TrimPrefix(line, "/connect ")
-			go func(peer string) {
-				chatUI.displayMessage("Connecting to peer...")
-				err := chat.node.DialPeer(peer)
-				if err != nil {
-					chatUI.displayMessage(err.Error())
-				} else {
-					chatUI.displayMessage("Peer connected succesfully")
-				}
-			}(peer)
-			return
-		}
+		// TODO Replace with JSON RPC
+		// if strings.HasPrefix(line, "/connect ") {
+		// 	peer := strings.TrimPrefix(line, "/connect ")
+		// 	go func(peer string) {
+		// 		chatUI.displayMessage("Connecting to peer...")
+		// 		err := chat.node.DialPeer(peer)
+		// 		if err != nil {
+		// 			chatUI.displayMessage(err.Error())
+		// 		} else {
+		// 			chatUI.displayMessage("Peer connected succesfully")
+		// 		}
+		// 	}(peer)
+		// 	return
+		// }
 
 		// list peers
-		if line == "/peers" {
-			peers := chat.node.Relay().PubSub().ListPeers(string(relay.DefaultWakuTopic))
-			if len(peers) == 0 {
-				chatUI.displayMessage("No peers available")
-			}
-			for _, p := range peers {
-				chatUI.displayMessage("- " + p.Pretty())
-			}
-			return
-		}
+		// TODO: Replace with JSON RPC
+		// if line == "/peers" {
+		// 	peers := chat.node.Relay().PubSub().ListPeers(string(relay.DefaultWakuTopic))
+		// 	if len(peers) == 0 {
+		// 		chatUI.displayMessage("No peers available")
+		// 	}
+		// 	for _, p := range peers {
+		// 		chatUI.displayMessage("- " + p.Pretty())
+		// 	}
+		// 	return
+		// }
 
 		// change nick
 		if strings.HasPrefix(line, "/nick ") {
@@ -144,9 +148,10 @@ Available commands:
 	chatUI.inputCh = inputCh
 	chatUI.doneCh = make(chan struct{}, 1)
 
-	for _, addr := range chat.node.ListenAddresses() {
-		chatUI.displayMessage(fmt.Sprintf("Listening on %s", addr))
-	}
+	// TODO Replace with JSON RPC
+	// for _, addr := range chat.node.ListenAddresses() {
+	// 	chatUI.displayMessage(fmt.Sprintf("Listening on %s", addr))
+	// }
 
 	return chatUI
 }

@@ -10,7 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	mrand "math/rand"
-	"net"
+	//"net"
 	"net/http"
 	"os"
 	"time"
@@ -35,12 +35,13 @@ func main() {
 	nodeKeyFlag := flag.String("nodekey", "", "private key for this node. will be generated if empty")
 	staticNodeFlag := flag.String("staticnode", "", "connects to a node. will get a random node from fleets.status.im if empty")
 	storeNodeFlag := flag.String("storenode", "", "connects to a store node to retrieve messages. will get a random node from fleets.status.im if empty")
-	port := flag.Int("port", 0, "port. Will be random if 0")
+	//port := flag.Int("port", 0, "port. Will be random if 0")
 	payloadV1Flag := flag.Bool("payloadV1", false, "use Waku v1 payload encoding/encryption. default false")
 
 	flag.Parse()
 
-	hostAddr, _ := net.ResolveTCPAddr("tcp", fmt.Sprintf("0.0.0.0:%d", *port))
+	// TODO Replace with JSON RPC, unclear if needed?
+	//hostAddr, _ := net.ResolveTCPAddr("tcp", fmt.Sprintf("0.0.0.0:%d", *port))
 
 	if *fleetFlag != "wakuv2.prod" && *fleetFlag != "wakuv2.test" {
 		fmt.Println("Invalid fleet. Valid values are wakuv2.prod and wakuv2.test")
@@ -58,6 +59,8 @@ func main() {
 		}
 	}
 	prvKey, err := crypto.HexToECDSA(nodekey)
+
+	log.Printf("NYI prvKey use", prvKey)
 
 	ctx := context.Background()
 	// TODO Replace with wrapper
@@ -85,7 +88,7 @@ func main() {
 	// Same as above
 	//chat, err := NewChat(wakuNode, wakuNode.Host().ID(), *contentTopicFlag, *payloadV1Flag, nick)
 	// TODO Replace wakuNode
-	chat, err := NewChat(wakuNode, "go-nwaku-test", *contentTopicFlag, *payloadV1Flag, nick)
+	chat, err := NewChat("go-nwaku-test", *contentTopicFlag, *payloadV1Flag, nick)
 	if err != nil {
 		panic(err)
 	}
@@ -117,44 +120,44 @@ func main() {
 		}
 
 		// TODO Call with JSON RPC
-		err = wakuNode.DialPeer(staticnode)
-		if err != nil {
-			ui.displayMessage("Could not connect to peer: " + err.Error())
-			return
-		} else {
-			ui.displayMessage("Connected to peer: " + staticnode)
+		// err = wakuNode.DialPeer(staticnode)
+		// if err != nil {
+		// 	ui.displayMessage("Could not connect to peer: " + err.Error())
+		// 	return
+		// } else {
+		// 	ui.displayMessage("Connected to peer: " + staticnode)
 
-		}
+		// }
 
-		if len(storenode) == 0 {
-			ui.displayMessage(fmt.Sprintf("No store node configured. Choosing one at random from %s fleet...", *fleetFlag))
-			storenode = getRandomFleetNode(fleetData, *fleetFlag)
-		}
+		// if len(storenode) == 0 {
+		// 	ui.displayMessage(fmt.Sprintf("No store node configured. Choosing one at random from %s fleet...", *fleetFlag))
+		// 	storenode = getRandomFleetNode(fleetData, *fleetFlag)
+		// }
 
-		// TODO Call with JSON RPC
-		storeNodeId, err := wakuNode.AddStorePeer(storenode)
-		if err != nil {
-			ui.displayMessage("Could not connect to storenode: " + err.Error())
-			return
-		} else {
-			ui.displayMessage("Connected to storenode: " + storenode)
-		}
+		// // TODO Call with JSON RPC
+		// storeNodeId, err := wakuNode.AddStorePeer(storenode)
+		// if err != nil {
+		// 	ui.displayMessage("Could not connect to storenode: " + err.Error())
+		// 	return
+		// } else {
+		// 	ui.displayMessage("Connected to storenode: " + storenode)
+		// }
 
 		time.Sleep(300 * time.Millisecond)
 		ui.displayMessage("Querying historic messages")
 
-		tCtx, _ := context.WithTimeout(ctx, 5*time.Second)
 		// TODO Call with JSON RPC
-		response, err := wakuNode.Query(tCtx, []string{*contentTopicFlag}, 0, 0,
-			store.WithAutomaticRequestId(),
-			store.WithPeer(*storeNodeId),
-			store.WithPaging(true, 0))
+		//tCtx, _ := context.WithTimeout(ctx, 5*time.Second)
+		// response, err := wakuNode.Query(tCtx, []string{*contentTopicFlag}, 0, 0,
+		// 	store.WithAutomaticRequestId(),
+		// 	store.WithPeer(*storeNodeId),
+		// 	store.WithPaging(true, 0))
 
-		if err != nil {
-			ui.displayMessage("Could not query storenode: " + err.Error())
-		} else {
-			chat.displayMessages(response.Messages)
-		}
+		// if err != nil {
+		// 	ui.displayMessage("Could not query storenode: " + err.Error())
+		// } else {
+		// 	chat.displayMessages(response.Messages)
+		// }
 	}()
 
 	//draw the UI
