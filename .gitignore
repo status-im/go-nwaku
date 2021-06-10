@@ -26,3 +26,5 @@ vendor/
 .lock
 build/
 *.lock
+
+examples/chat2/bin/

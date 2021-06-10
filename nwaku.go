@@ -13,7 +13,6 @@ func main() {
 	fmt.Println("Starting node...")
 
 	nodeStopped := make(chan bool, 1)
-	// TODO Doesn't seem like SIGINT hook is hit here
 	go nwaku.StartNode(nodeStopped)
 
 	// NOTE: RPC server needs time to start, this can be improved

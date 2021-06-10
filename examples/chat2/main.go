@@ -15,7 +15,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/ethereum/go-ethereum/crypto"
+	//"github.com/ethereum/go-ethereum/crypto"
 	logging "github.com/ipfs/go-log"
 	"github.com/libp2p/go-libp2p-core/peer"
 
@@ -60,16 +60,23 @@ func main() {
 			return
 		}
 	}
-	prvKey, err := crypto.HexToECDSA(nodekey)
+	//prvKey, err := crypto.HexToECDSA(nodekey)
 
-	log.Printf("NYI prvKey use", prvKey)
+	//log.Printf("NYI prvKey use", prvKey)
+	log.Printf("Starting node...")
+	nodeStopped := make(chan bool, 1)
+	// TODO Doesn't seem like SIGINT hook is hit here
+	go nwaku.StartNode(nodeStopped)
+
+	// NOTE: RPC server needs time to start, this can be improved
+	time.Sleep(2 * time.Second)
 
 	// TODO Start wrapper node
+	// Start wrapper here
 	// Assumes node started
 	client, _ := rpc.Dial("http://127.0.0.1:8545")
 
 	ctx := context.Background()
-	// TODO Replace with wrapper
 	// wakuNode, err := node.New(ctx,
 	// 	node.WithPrivateKey(prvKey),
 	// 	node.WithHostAddress([]net.Addr{hostAddr}),
@@ -174,6 +181,9 @@ func main() {
 	if err = ui.Run(); err != nil {
 		printErr("error running text UI: %s", err)
 	}
+
+    <-nodeStopped
+    log.Printf("exiting main")
 }
 
 // Generates a random hex string with a length of n
