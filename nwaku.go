@@ -31,7 +31,7 @@ func main() {
 	var contentTopic = "/toy-chat/2/huilong/proto"
 
 	// Get node info
-	var wakuInfo = nwaku.GetWakuDebugInfo(client)
+	var wakuInfo, _ = nwaku.GetWakuDebugInfo(client)
 	fmt.Println("WakuInfo ListenStr", wakuInfo.ListenStr)
 
 	// Query messages

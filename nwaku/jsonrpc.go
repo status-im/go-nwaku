@@ -4,14 +4,14 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-func GetWakuDebugInfo(client *rpc.Client) WakuInfo {
+func GetWakuDebugInfo(client *rpc.Client) (WakuInfo, error) {
 	var wakuInfo WakuInfo
 
 	if err := client.Call(&wakuInfo, "get_waku_v2_debug_v1_info"); err != nil {
-		panic(err)
+		return wakuInfo, err
 	}
 
-	return wakuInfo
+	return wakuInfo, nil
 }
 
 func GetWakuStoreMessages(client *rpc.Client, contentTopic string) (StoreResponse, error) {
@@ -66,4 +66,3 @@ func GetWakuRelayMessages(client *rpc.Client, topic string) ([]WakuMessage, erro
 // - Exposing higher level methods as API
 // - Consider using methods scoped to rpc.Client instead
 // - Support more args in store rpc call
-// - Uniform error handling
