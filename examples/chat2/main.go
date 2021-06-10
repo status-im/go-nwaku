@@ -23,7 +23,7 @@ import (
 	// "github.com/status-im/go-waku/waku/v2/node"
 	// "github.com/status-im/go-waku/waku/v2/protocol/store"
 	"github.com/ethereum/go-ethereum/rpc"
-	//"github.com/status-im/go-nwaku/nwaku"
+	"github.com/status-im/go-nwaku/nwaku"
 )
 
 var DefaultContentTopic string = "/toy-chat/2/huilong/proto"
@@ -157,6 +157,12 @@ func main() {
 		// 	store.WithAutomaticRequestId(),
 		// 	store.WithPeer(*storeNodeId),
 		// 	store.WithPaging(true, 0))
+
+		// Query messages
+		// TODO Error handling, e.g. if no store peer
+		var contentTopic = "/toy-chat/2/huilong/proto"
+		var response = nwaku.GetWakuStoreMessages(client, contentTopic)
+		chat.displayMessages(response.Messages)
 
 		// if err != nil {
 		// 	ui.displayMessage("Could not query storenode: " + err.Error())

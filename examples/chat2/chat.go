@@ -14,7 +14,7 @@ import (
 	wpb "github.com/status-im/go-waku/waku/v2/protocol/pb"
 	"golang.org/x/crypto/pbkdf2"
 
-	//	"github.com/status-im/go-nwaku/nwaku"
+	"github.com/status-im/go-nwaku/nwaku"
 )
 
 // Chat represents a subscription to a single PubSub topic. Messages
@@ -117,7 +117,7 @@ func (cr *Chat) Publish(ctx context.Context, message string) error {
 	return err
 }
 
-func (cr *Chat) decodeMessage(wakumsg *wpb.WakuMessage) {
+func (cr *Chat) decodeMessage(wakumsg nwaku.WakuMessage) {
 	var keyInfo *node.KeyInfo = &node.KeyInfo{}
 	if cr.useV1Payload { // Use WakuV1 encryption
 		keyInfo.Kind = node.Symmetric
@@ -126,13 +126,10 @@ func (cr *Chat) decodeMessage(wakumsg *wpb.WakuMessage) {
 		keyInfo.Kind = node.None
 	}
 
-	payload, err := node.DecodePayload(wakumsg, keyInfo)
-	if err != nil {
-		return
-	}
+	var payload = wakumsg.Payload
 
 	msg := &pb.Chat2Message{}
-	if err := proto.Unmarshal(payload.Data, msg); err != nil {
+	if err := proto.Unmarshal(payload, msg); err != nil {
 		return
 	}
 
@@ -148,7 +145,7 @@ func (cr *Chat) readLoop() {
 	// }
 }
 
-func (cr *Chat) displayMessages(messages []*wpb.WakuMessage) {
+func (cr *Chat) displayMessages(messages []nwaku.WakuMessage) {
 	for _, msg := range messages {
 		cr.decodeMessage(msg)
 	}
