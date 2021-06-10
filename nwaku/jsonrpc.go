@@ -10,6 +10,8 @@ import (
 // NOTE Can be generalized with different transports (HTTP, IPC, WS etc)
 // https://github.com/ethereum/go-ethereum/blob/master/rpc/client.go#L169
 
+// Later: Generalize with CallContext (not prio)
+
 // TODO Move to types
 type WakuInfo struct {
 	ListenStr string `json:"listenStr"`
@@ -33,6 +35,33 @@ type ContentFilter struct {
 	ContentTopic string `json:"contentTopic"`
 }
 
+func getWakuDebugInfo(client *rpc.Client) WakuInfo {
+	var wakuInfo WakuInfo
+
+	if err := client.Call(&wakuInfo, "get_waku_v2_debug_v1_info"); err != nil {
+		panic(err)
+	}
+
+	return wakuInfo
+}
+
+func getWakuStoreMessages(client *rpc.Client, contentTopic string) StoreResponse {
+	var storeResponse StoreResponse
+	var contentFilter = ContentFilter{contentTopic}
+	var contentFilters []ContentFilter
+
+	contentFilters = append(contentFilters, contentFilter)
+	if err := client.Call(&storeResponse, "get_waku_v2_store_v1_messages", "", contentFilters); err != nil {
+		panic(err)
+	}
+
+	return storeResponse
+
+}
+
+// TODO Publish
+// TODO Subscribe
+
 func main() {
 	fmt.Println("JSON RPC request...")
 
@@ -41,27 +70,13 @@ func main() {
 
 	// Assumes node started
 	client, _ := rpc.Dial("http://127.0.0.1:8545")
-	var wakuInfo WakuInfo
-	// TODO id, params?
-	if err := client.Call(&wakuInfo, "get_waku_v2_debug_v1_info"); err != nil {
-		panic(err)
-	}
+
+	var wakuInfo = getWakuDebugInfo(client)
 	fmt.Println("WakuInfo ListenStr", wakuInfo.ListenStr)
 
-	//curl -d '{"jsonrpc":"2.0","id":"id","method":"get_waku_v2_store_v1_messages", "params":["", [{"contentTopic":"/waku/2/default-content/proto"}]]}' --header "Content-Type: application/json" http://localhost:8545
-	var messageResponse StoreResponse
-	var contentFilter = ContentFilter{"/toy-chat/2/huilong/proto"}
-	var contentFilters []ContentFilter
-	contentFilters = append(contentFilters, contentFilter)
-	var arg1 = ""
-	var arg2 = contentFilters
-	if err := client.Call(&messageResponse, "get_waku_v2_store_v1_messages", arg1, arg2); err != nil {
-		panic(err)
-	}
-	fmt.Println("Resp", messageResponse)
+	// TODO More args
+	var contentTopic = "/toy-chat/2/huilong/proto"
+	var storeResponse = getWakuStoreMessages(client, contentTopic)
+	fmt.Println("Fetched", len(storeResponse.Messages), "messages")
 }
 
-// ./bin/wakunode2 --storenode=/ip4/188.166.135.145/tcp/30303/p2p/16Uiu2HAmL5okWopX7NqZWBUKVqW8iUxCEmd5GMHLVPwCgzYzQv3e
-// curl -d '{"jsonrpc":"2.0","id":"id","method":"get_waku_v2_store_v1_messages", "params":["", [{"contentTopic":"/toy-chat/2/huilong/proto"}]]}' --header "Content-Type: application/json" http://localhost:8545
-
-// Later: Generalize with CallContext (not prio)
