@@ -32,7 +32,8 @@ func StartNode() {
 		done <- true
 	}()
 
-	cmd := exec.Command("../bin/wakunode2")
+	// TODO Use PATH or so here instead...
+	cmd := exec.Command("./bin/wakunode2")
 
     outfile, err := os.Create("./wakunode2.log")
 	if err != nil {

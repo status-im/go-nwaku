@@ -10,7 +10,9 @@ import (
 
 func main() {
 	fmt.Println("Starting node...")
-	nwaku.StartNode()
+	go nwaku.StartNode()
+
+	time.Sleep(2 * time.Second)
 
 	fmt.Println("JSON RPC request...")
 
