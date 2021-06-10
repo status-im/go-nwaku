@@ -12,6 +12,8 @@ import (
 	"github.com/status-im/go-waku/waku/v2/node"
 	wpb "github.com/status-im/go-waku/waku/v2/protocol/pb"
 	"golang.org/x/crypto/pbkdf2"
+
+	"github.com/status-im/go-nwaku/nwaku"
 )
 
 // Chat represents a subscription to a single PubSub topic. Messages
