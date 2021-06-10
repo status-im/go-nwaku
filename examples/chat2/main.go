@@ -114,14 +114,16 @@ func main() {
 		staticnode := *staticNodeFlag
 		storenode := *storeNodeFlag
 
-		var fleetData []byte
+		//var fleetData []byte
 		if len(staticnode) == 0 || len(storenode) == 0 {
-			fleetData = getFleetData()
+			// XXX Context timeouts
+			//fleetData = getFleetData()
 		}
 
 		if len(staticnode) == 0 {
 			ui.displayMessage(fmt.Sprintf("No static peers configured. Choosing one at random from %s fleet...", *fleetFlag))
-			staticnode = getRandomFleetNode(fleetData, *fleetFlag)
+			// XXX Disable for now
+			//staticnode = getRandomFleetNode(fleetData, *fleetFlag)
 		}
 
 		// TODO Call with JSON RPC

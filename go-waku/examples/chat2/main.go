@@ -104,7 +104,8 @@ func main() {
 
 		if len(staticnode) == 0 {
 			ui.displayMessage(fmt.Sprintf("No static peers configured. Choosing one at random from %s fleet...", *fleetFlag))
-			staticnode = getRandomFleetNode(fleetData, *fleetFlag)
+			// XXX Do via RPC
+			//staticnode = getRandomFleetNode(fleetData, *fleetFlag)
 		}
 
 		err = wakuNode.DialPeer(staticnode)
@@ -118,7 +119,8 @@ func main() {
 
 		if len(storenode) == 0 {
 			ui.displayMessage(fmt.Sprintf("No store node configured. Choosing one at random from %s fleet...", *fleetFlag))
-			storenode = getRandomFleetNode(fleetData, *fleetFlag)
+			// XXX Do via RPC
+			// storenode = getRandomFleetNode(fleetData, *fleetFlag)
 		}
 
 		storeNodeId, err := wakuNode.AddStorePeer(storenode)
