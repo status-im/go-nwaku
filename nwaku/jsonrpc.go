@@ -4,14 +4,6 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-// NOTE Can be generalized with different transports (HTTP, IPC, WS etc)
-// https://github.com/ethereum/go-ethereum/blob/master/rpc/client.go#L169
-
-// Later: Generalize with CallContext (not prio)
-
-// NOTE Exposing these methods publicly directly, might be wrapped for higher
-// level a la Node API
-
 func GetWakuDebugInfo(client *rpc.Client) WakuInfo {
 	var wakuInfo WakuInfo
 
@@ -22,7 +14,6 @@ func GetWakuDebugInfo(client *rpc.Client) WakuInfo {
 	return wakuInfo
 }
 
-// TODO Support more args
 func GetWakuStoreMessages(client *rpc.Client, contentTopic string) (StoreResponse, error) {
 	var storeResponse StoreResponse
 	var contentFilter = ContentFilter{contentTopic}
@@ -51,4 +42,13 @@ func PostWakuRelayMessage(client *rpc.Client, message WakuRelayMessage) bool {
 // TODO Subscribe, then poll for getting messages
 // https://rfc.vac.dev/spec/16/#post_waku_v2_relay_v1_subscriptions
 // https://rfc.vac.dev/spec/16/#get_waku_v2_relay_v1_messages
-// For now, just do query and publish
+// For now, just use query and publish
+
+// General things that can be improved:
+// - Generalized with different transports (HTTP, IPC, WS etc), see
+// https://github.com/ethereum/go-ethereum/blob/master/rpc/client.go#L169
+// - Generalize with CallContext
+// - Exposing higher level methods as API
+// - Consider using methods scoped to rpc.Client instead
+// - Support more args in store rpc call
+// - Uniform error handling
