@@ -38,7 +38,7 @@ func main() {
 
 	// Publish
 	var message = nwaku.WakuRelayMessage{Payload: "0x1a2b3c4d5e6f", ContentTopic: contentTopic}
-	var res = nwaku.PostWakuRelayMessage(client, message)
+	var res, _ = nwaku.PostWakuRelayMessage(client, message)
 	fmt.Println("Publish", res)
 
     <-nodeStopped

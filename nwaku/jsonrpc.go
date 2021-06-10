@@ -28,15 +28,15 @@ func GetWakuStoreMessages(client *rpc.Client, contentTopic string) (StoreRespons
 
 }
 
-func PostWakuRelayMessage(client *rpc.Client, message WakuRelayMessage) bool {
+func PostWakuRelayMessage(client *rpc.Client, message WakuRelayMessage) (bool, error) {
 	var topic = "/waku/2/default-waku/proto"
 	var res bool
 
 	if err := client.Call(&res, "post_waku_v2_relay_v1_message", topic, message); err != nil {
-		panic(err)
+		return res, err
 	}
 
-	return res
+	return res, nil
 }
 
 // TODO Subscribe, then poll for getting messages
