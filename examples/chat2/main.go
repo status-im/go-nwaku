@@ -22,6 +22,8 @@ import (
 	// TODO Replace with wrapper
 	// "github.com/status-im/go-waku/waku/v2/node"
 	// "github.com/status-im/go-waku/waku/v2/protocol/store"
+	"github.com/ethereum/go-ethereum/rpc"
+	//"github.com/status-im/go-nwaku/nwaku"
 )
 
 var DefaultContentTopic string = "/toy-chat/2/huilong/proto"
@@ -62,6 +64,10 @@ func main() {
 
 	log.Printf("NYI prvKey use", prvKey)
 
+	// TODO Start wrapper node
+	// Assumes node started
+	client, _ := rpc.Dial("http://127.0.0.1:8545")
+
 	ctx := context.Background()
 	// TODO Replace with wrapper
 	// wakuNode, err := node.New(ctx,
@@ -86,9 +92,8 @@ func main() {
 
 	// join the chat
 	// Same as above
-	//chat, err := NewChat(wakuNode, wakuNode.Host().ID(), *contentTopicFlag, *payloadV1Flag, nick)
 	// TODO Replace wakuNode
-	chat, err := NewChat("go-nwaku-test", *contentTopicFlag, *payloadV1Flag, nick)
+	chat, err := NewChat(client, "go-nwaku-test", *contentTopicFlag, *payloadV1Flag, nick)
 	if err != nil {
 		panic(err)
 	}

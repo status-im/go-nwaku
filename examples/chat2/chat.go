@@ -7,13 +7,14 @@ import (
 	"time"
 	"log"
 
+	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/golang/protobuf/proto"
 	"github.com/libp2p/go-libp2p-core/peer"
 	"github.com/status-im/go-waku/waku/v2/node"
 	wpb "github.com/status-im/go-waku/waku/v2/protocol/pb"
 	"golang.org/x/crypto/pbkdf2"
 
-	"github.com/status-im/go-nwaku/nwaku"
+	//	"github.com/status-im/go-nwaku/nwaku"
 )
 
 // Chat represents a subscription to a single PubSub topic. Messages
@@ -26,6 +27,7 @@ type Chat struct {
 	sub  *node.Subscription
 	// TODO Replace with wrapper
 	//node *node.WakuNode
+	client *rpc.Client
 
 	self         peer.ID
 	contentTopic string
@@ -35,7 +37,7 @@ type Chat struct {
 
 // NewChat tries to subscribe to the PubSub topic for the room name, returning
 // a ChatRoom on success.
-func NewChat(selfID peer.ID, contentTopic string, useV1Payload bool, nickname string) (*Chat, error) {
+func NewChat(client *rpc.Client, selfID peer.ID, contentTopic string, useV1Payload bool, nickname string) (*Chat, error) {
 	// join the default waku topic and subscribe to it
 	//  TODO Do this with JSON RPC
 	// sub, err := n.Subscribe(nil)
