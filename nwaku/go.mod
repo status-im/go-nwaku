@@ -1,4 +1,4 @@
-module github.com/status-im/go-nwaku
+module github.com/status-im/go-nwaku/nwaku
 
 go 1.15
 
