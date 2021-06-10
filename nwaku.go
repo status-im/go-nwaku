@@ -27,19 +27,29 @@ func main() {
 	// Assumes node started
 	client, _ := rpc.Dial("http://127.0.0.1:8545")
 
+	var defaultTopic = "/waku/2/default-waku/proto"
+	var contentTopic = "/toy-chat/2/huilong/proto"
+
 	// Get node info
 	var wakuInfo = nwaku.GetWakuDebugInfo(client)
 	fmt.Println("WakuInfo ListenStr", wakuInfo.ListenStr)
 
 	// Query messages
-	var contentTopic = "/toy-chat/2/huilong/proto"
 	var storeResponse, _ = nwaku.GetWakuStoreMessages(client, contentTopic)
 	fmt.Println("Fetched", len(storeResponse.Messages), "messages")
 
+	// Subscribe
+	var res, _ = nwaku.PostWakuRelaySubscriptions(client, []string{defaultTopic})
+	fmt.Println("Subscribe", res)
+
 	// Publish
 	var message = nwaku.WakuRelayMessage{Payload: "0x1a2b3c4d5e6f", ContentTopic: contentTopic}
-	var res, _ = nwaku.PostWakuRelayMessage(client, message)
-	fmt.Println("Publish", res)
+	var res2, _ = nwaku.PostWakuRelayMessage(client, message)
+	fmt.Println("Publish", res2)
+
+	// Get messages
+	var wakuMessages, _ = nwaku.GetWakuRelayMessages(client, defaultTopic)
+	fmt.Println("Get messages", wakuMessages)
 
     <-nodeStopped
     log.Printf("exiting main")

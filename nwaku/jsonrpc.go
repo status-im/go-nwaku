@@ -39,10 +39,25 @@ func PostWakuRelayMessage(client *rpc.Client, message WakuRelayMessage) (bool, e
 	return res, nil
 }
 
-// TODO Subscribe, then poll for getting messages
-// https://rfc.vac.dev/spec/16/#post_waku_v2_relay_v1_subscriptions
-// https://rfc.vac.dev/spec/16/#get_waku_v2_relay_v1_messages
-// For now, just use query and publish
+func PostWakuRelaySubscriptions(client *rpc.Client, topics []string) (bool, error) {
+	var res bool
+
+	if err := client.Call(&res, "post_waku_v2_relay_v1_subscriptions", topics); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func GetWakuRelayMessages(client *rpc.Client, topic string) ([]WakuMessage, error) {
+	var res []WakuMessage
+
+	if err := client.Call(&res, "get_waku_v2_relay_v1_messages", topic); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
 
 // General things that can be improved:
 // - Generalized with different transports (HTTP, IPC, WS etc), see
