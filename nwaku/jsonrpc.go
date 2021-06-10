@@ -79,7 +79,10 @@ func postWakuRelayMessage(client *rpc.Client, message WakuRelayMessage) bool {
 	return res
 }
 
-// TODO Subscribe
+// TODO Subscribe, then poll for getting messages
+// https://rfc.vac.dev/spec/16/#post_waku_v2_relay_v1_subscriptions
+// https://rfc.vac.dev/spec/16/#get_waku_v2_relay_v1_messages
+// For now, just do query and publish
 
 func main() {
 	fmt.Println("JSON RPC request...")
@@ -104,4 +107,3 @@ func main() {
 	var res = postWakuRelayMessage(client, message)
 	fmt.Println("Publish", res)
 }
-
