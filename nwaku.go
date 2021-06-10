@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/status-im/go-nwaku/nwaku"
@@ -10,8 +11,12 @@ import (
 
 func main() {
 	fmt.Println("Starting node...")
-	go nwaku.StartNode()
 
+	nodeStopped := make(chan bool, 1)
+	// TODO Doesn't seem like SIGINT hook is hit here
+	go nwaku.StartNode(nodeStopped)
+
+	// NOTE: RPC server needs time to start, this can be improved
 	time.Sleep(2 * time.Second)
 
 	fmt.Println("JSON RPC request...")
@@ -35,4 +40,7 @@ func main() {
 	var message = nwaku.WakuRelayMessage{Payload: "0x1a2b3c4d5e6f", ContentTopic: contentTopic}
 	var res = nwaku.PostWakuRelayMessage(client, message)
 	fmt.Println("Publish", res)
+
+    <-nodeStopped
+    log.Printf("exiting main")
 }

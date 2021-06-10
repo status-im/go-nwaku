@@ -18,7 +18,7 @@ func StopNode() {
 	log.Printf("stopping wakunode2 process %s", string(strb))
 }
 
-func StartNode() {
+func StartNode(nodeStopped chan bool) {
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
 
@@ -33,7 +33,9 @@ func StartNode() {
 	}()
 
 	// TODO Use PATH or so here instead...
-	cmd := exec.Command("./bin/wakunode2")
+	// XXX Hardcode store node here, build up string instead
+	// TODO Build up command here
+	cmd := exec.Command("./bin/wakunode2", "--storenode=/ip4/188.166.135.145/tcp/30303/p2p/16Uiu2HAmL5okWopX7NqZWBUKVqW8iUxCEmd5GMHLVPwCgzYzQv3e")
 
     outfile, err := os.Create("./wakunode2.log")
 	if err != nil {
@@ -53,4 +55,7 @@ func StartNode() {
 
     <-done
     log.Printf("exiting")
+
+	// XXX Move to StopNode function? Flow a bit odd
+	nodeStopped <- true
 }
