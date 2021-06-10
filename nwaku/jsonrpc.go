@@ -15,8 +15,18 @@ type WakuInfo struct {
 	ListenStr string `json:"listenStr"`
 }
 
-type HistoricalMessageResponse struct {
-	Messages string  `json:"messages"`
+// XXX in this case Payload isn't string but something else
+// panic: json: cannot unmarshal array into Go struct field WakuMessage.messages.payload of type string
+// TODO This should be toy-chat protobuf probably
+type WakuMessage struct {
+	Payload []byte `json:"payload"`
+	ContentTopic string `json:"contentTopic"`
+	Version int `json:"version"`
+	Timestamp float64 `json:"timestamp"`
+}
+
+type StoreResponse struct {
+	Messages []WakuMessage  `json:"messages"`
 }
 
 type ContentFilter struct {
@@ -38,10 +48,8 @@ func main() {
 	}
 	fmt.Println("WakuInfo ListenStr", wakuInfo.ListenStr)
 
-	// TODO Lets do query of messages
-	//
 	//curl -d '{"jsonrpc":"2.0","id":"id","method":"get_waku_v2_store_v1_messages", "params":["", [{"contentTopic":"/waku/2/default-content/proto"}]]}' --header "Content-Type: application/json" http://localhost:8545
-	var messageResponse HistoricalMessageResponse
+	var messageResponse StoreResponse
 	var contentFilter = ContentFilter{"/toy-chat/2/huilong/proto"}
 	var contentFilters []ContentFilter
 	contentFilters = append(contentFilters, contentFilter)
