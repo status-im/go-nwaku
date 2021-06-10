@@ -21,10 +21,18 @@ type WakuInfo struct {
 // panic: json: cannot unmarshal array into Go struct field WakuMessage.messages.payload of type string
 // TODO This should be toy-chat protobuf probably
 type WakuMessage struct {
+	// TODO Should be hex encoded string here
 	Payload []byte `json:"payload"`
 	ContentTopic string `json:"contentTopic"`
 	Version int `json:"version"`
 	Timestamp float64 `json:"timestamp"`
+}
+
+type WakuRelayMessage struct {
+	Payload string `json:"payload"`
+	ContentTopic string `json:"contentTopic"`
+	//	Version int `json:"version"`
+	//	Timestamp float64 `json:"timestamp"`
 }
 
 type StoreResponse struct {
@@ -45,6 +53,7 @@ func getWakuDebugInfo(client *rpc.Client) WakuInfo {
 	return wakuInfo
 }
 
+// TODO Support more args
 func getWakuStoreMessages(client *rpc.Client, contentTopic string) StoreResponse {
 	var storeResponse StoreResponse
 	var contentFilter = ContentFilter{contentTopic}
@@ -59,7 +68,17 @@ func getWakuStoreMessages(client *rpc.Client, contentTopic string) StoreResponse
 
 }
 
-// TODO Publish
+func postWakuRelayMessage(client *rpc.Client, message WakuRelayMessage) bool {
+	var topic = "/waku/2/default-waku/proto"
+	var res bool
+
+	if err := client.Call(&res, "post_waku_v2_relay_v1_message", topic, message); err != nil {
+		panic(err)
+	}
+
+	return res
+}
+
 // TODO Subscribe
 
 func main() {
@@ -71,12 +90,18 @@ func main() {
 	// Assumes node started
 	client, _ := rpc.Dial("http://127.0.0.1:8545")
 
+	// Get node info
 	var wakuInfo = getWakuDebugInfo(client)
 	fmt.Println("WakuInfo ListenStr", wakuInfo.ListenStr)
 
-	// TODO More args
+	// Query messages
 	var contentTopic = "/toy-chat/2/huilong/proto"
 	var storeResponse = getWakuStoreMessages(client, contentTopic)
 	fmt.Println("Fetched", len(storeResponse.Messages), "messages")
+
+	// Publish
+	var message = WakuRelayMessage{Payload: "0x1a2b3c4d5e6f", ContentTopic: contentTopic}
+	var res = postWakuRelayMessage(client, message)
+	fmt.Println("Publish", res)
 }
 
