@@ -10,7 +10,7 @@ import (
 	"syscall"
 )
 
-func stopNode() {
+func StopNode() {
 	// Since we have reference to same process we can also use cmd.Process.Kill()
 	strb, _ := ioutil.ReadFile("wakunode2.lock")
 	command := exec.Command("kill", string(strb))
@@ -18,7 +18,7 @@ func stopNode() {
 	log.Printf("stopping wakunode2 process %s", string(strb))
 }
 
-func startNode() {
+func StartNode() {
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
 
@@ -28,7 +28,7 @@ func startNode() {
 	go func() {
 		sig := <-sigs
 		log.Printf("received %s", sig)
-		stopNode()
+		StopNode()
 		done <- true
 	}()
 
@@ -52,8 +52,4 @@ func startNode() {
 
     <-done
     log.Printf("exiting")
-}
-
-func main() {
-	startNode()
 }
