@@ -23,17 +23,17 @@ func GetWakuDebugInfo(client *rpc.Client) WakuInfo {
 }
 
 // TODO Support more args
-func GetWakuStoreMessages(client *rpc.Client, contentTopic string) StoreResponse {
+func GetWakuStoreMessages(client *rpc.Client, contentTopic string) (StoreResponse, error) {
 	var storeResponse StoreResponse
 	var contentFilter = ContentFilter{contentTopic}
 	var contentFilters []ContentFilter
 
 	contentFilters = append(contentFilters, contentFilter)
 	if err := client.Call(&storeResponse, "get_waku_v2_store_v1_messages", "", contentFilters); err != nil {
-		panic(err)
+		return storeResponse, err
 	}
 
-	return storeResponse
+	return storeResponse, nil
 
 }
 

@@ -33,7 +33,7 @@ func main() {
 
 	// Query messages
 	var contentTopic = "/toy-chat/2/huilong/proto"
-	var storeResponse = nwaku.GetWakuStoreMessages(client, contentTopic)
+	var storeResponse, _ = nwaku.GetWakuStoreMessages(client, contentTopic)
 	fmt.Println("Fetched", len(storeResponse.Messages), "messages")
 
 	// Publish

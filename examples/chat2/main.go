@@ -159,16 +159,13 @@ func main() {
 		// 	store.WithPaging(true, 0))
 
 		// Query messages
-		// TODO Error handling, e.g. if no store peer
 		var contentTopic = "/toy-chat/2/huilong/proto"
-		var response = nwaku.GetWakuStoreMessages(client, contentTopic)
-		chat.displayMessages(response.Messages)
-
-		// if err != nil {
-		// 	ui.displayMessage("Could not query storenode: " + err.Error())
-		// } else {
-		// 	chat.displayMessages(response.Messages)
-		// }
+		var response, err = nwaku.GetWakuStoreMessages(client, contentTopic)
+		if err != nil {
+			ui.displayMessage("Could not query storenode: " + err.Error())
+		} else {
+			chat.displayMessages(response.Messages)
+		}
 	}()
 
 	//draw the UI
