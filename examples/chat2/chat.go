@@ -4,14 +4,14 @@ import (
 	"chat2/pb"
 	"context"
 	"crypto/sha256"
+	"encoding/hex"
 	"time"
-	"log"
 
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/golang/protobuf/proto"
 	"github.com/libp2p/go-libp2p-core/peer"
-	"github.com/status-im/go-waku/waku/v2/node"
-	wpb "github.com/status-im/go-waku/waku/v2/protocol/pb"
+	//"github.com/status-im/go-waku/waku/v2/node"
+	//wpb "github.com/status-im/go-waku/waku/v2/protocol/pb"
 	"golang.org/x/crypto/pbkdf2"
 
 	"github.com/status-im/go-nwaku/nwaku"
@@ -24,7 +24,8 @@ type Chat struct {
 	// Messages is a channel of messages received from other peers in the chat room
 	Messages chan *pb.Chat2Message
 
-	sub  *node.Subscription
+	// TODO Replace this
+	//sub  *node.Subscription
 	// TODO Replace with wrapper
 	//node *node.WakuNode
 	client *rpc.Client
@@ -47,6 +48,7 @@ func NewChat(client *rpc.Client, selfID peer.ID, contentTopic string, useV1Paylo
 
 	c := &Chat{
 		//node:         n,
+		client:         client,
 		//sub:          sub,
 		self:         selfID,
 		contentTopic: contentTopic,
@@ -81,50 +83,75 @@ func (cr *Chat) Publish(ctx context.Context, message string) error {
 		return err
 	}
 
-	var version uint32
-	var timestamp float64 = float64(time.Now().UnixNano())
-	var keyInfo *node.KeyInfo = &node.KeyInfo{}
+	//log.Println("Publish", msg)
 
-	if cr.useV1Payload { // Use WakuV1 encryption
-		keyInfo.Kind = node.Symmetric
-		keyInfo.SymKey = generateSymKey(cr.contentTopic)
-		version = 1
-	} else {
-		keyInfo.Kind = node.None
-		version = 0
-	}
+	//var version uint32
+	// TODO Add support
+	//var timestamp float64 = float64(time.Now().UnixNano())
+	// var keyInfo *node.KeyInfo = &node.KeyInfo{}
 
-	p := new(node.Payload)
-	p.Data = msgBytes
-	p.Key = keyInfo
+	// if cr.useV1Payload { // Use WakuV1 encryption
+	// 	keyInfo.Kind = node.Symmetric
+	// 	keyInfo.SymKey = generateSymKey(cr.contentTopic)
+	// 	version = 1
+	// } else {
+	// 	keyInfo.Kind = node.None
+	// 	version = 0
+	// }
 
-	payload, err := p.Encode(version)
-	if err != nil {
-		return err
-	}
+	// TODO Implement, see what makes sense here vs private API
+	// p := new(node.Payload)
+	// p.Data = msgBytes
+	// p.Key = keyInfo
 
-	wakuMsg := &wpb.WakuMessage{
-		Payload:      payload,
-		Version:      version,
-		ContentTopic: cr.contentTopic,
-		Timestamp:    timestamp,
-	}
+	// // XXX Is this right?
+	// payload, err := p.Encode(version)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// For version 0, should get payload.Data, []byte
+	// TODO Want it hex encoded though
+	var payload = msgBytes
+
+	// wakuMsg := &wpb.WakuMessage{
+	// 	Payload:      payload,
+	// 	Version:      version,
+	// 	ContentTopic: cr.contentTopic,
+	// 	Timestamp:    timestamp,
+	// }
+
+	var hexEncoded = make([]byte, hex.EncodedLen(len(payload)))
+	hex.Encode(hexEncoded, payload)
+	//fmt.Println("%s\n", hexEncoded)
 
 	// TODO Replace with jSON RPC
 	//_, err = cr.node.Publish(ctx, wakuMsg, nil)
-	log.Printf("NYI Publish", wakuMsg)
+	// NOTE version field support https://rfc.vac.dev/spec/16/#wakurelaymessage
+	var wakuMsg = nwaku.WakuRelayMessage{
+		Payload: string(hexEncoded), // "0x1a2b3c4d5e6f",
+		ContentTopic: cr.contentTopic,
+		//Timestamp: timestamp,
+	}
+	// TODO Error handling
+	// XXX: Somewhere it panics
+	// gonwaku > testpanic: runtime error: invalid memory address or nil pointer dereference
+	var _, _ = nwaku.PostWakuRelayMessage(cr.client, wakuMsg)
+	//XXX dont see this?
+	//log.Printf("NYI Publish", res, err2)
 
-	return err
+	return nil
 }
 
 func (cr *Chat) decodeMessage(wakumsg nwaku.WakuMessage) {
-	var keyInfo *node.KeyInfo = &node.KeyInfo{}
-	if cr.useV1Payload { // Use WakuV1 encryption
-		keyInfo.Kind = node.Symmetric
-		keyInfo.SymKey = generateSymKey(cr.contentTopic)
-	} else {
-		keyInfo.Kind = node.None
-	}
+	// TODO Re-enable
+	// var keyInfo *node.KeyInfo = &node.KeyInfo{}
+	// if cr.useV1Payload { // Use WakuV1 encryption
+	// 	keyInfo.Kind = node.Symmetric
+	// 	keyInfo.SymKey = generateSymKey(cr.contentTopic)
+	// } else {
+	// 	keyInfo.Kind = node.None
+	// }
 
 	var payload = wakumsg.Payload
 

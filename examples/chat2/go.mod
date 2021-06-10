@@ -14,7 +14,7 @@ require (
 	github.com/libp2p/go-libp2p-core v0.8.5
 	github.com/rivo/tview v0.0.0-20210312174852-ae9464cc3598
 	github.com/status-im/go-nwaku/nwaku v0.0.0-00010101000000-000000000000
-	github.com/status-im/go-waku v0.0.0-20210428201044-3d8aae5b81b9
+	github.com/status-im/go-waku v0.0.0-20210428201044-3d8aae5b81b9 // indirect
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	google.golang.org/protobuf v1.25.0
 )
