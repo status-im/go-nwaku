@@ -24,3 +24,5 @@ bin/wakunode2
 vendor/
 
 .lock
+build/
+*.lock
