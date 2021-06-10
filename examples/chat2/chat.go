@@ -26,6 +26,7 @@ type Chat struct {
 
 	// TODO Replace this
 	//sub  *node.Subscription
+	pubsubTopic string
 	// TODO Replace with wrapper
 	//node *node.WakuNode
 	client *rpc.Client
@@ -39,17 +40,19 @@ type Chat struct {
 // NewChat tries to subscribe to the PubSub topic for the room name, returning
 // a ChatRoom on success.
 func NewChat(client *rpc.Client, selfID peer.ID, contentTopic string, useV1Payload bool, nickname string) (*Chat, error) {
+	var defaultTopic = "/waku/2/default-waku/proto"
 	// join the default waku topic and subscribe to it
-	//  TODO Do this with JSON RPC
-	// sub, err := n.Subscribe(nil)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	_, err := nwaku.PostWakuRelaySubscriptions(client, []string{defaultTopic})
+	if err != nil {
+		return nil, err
+	}
 
 	c := &Chat{
 		//node:         n,
 		client:         client,
+		// XXX Not used directly anymore
 		//sub:          sub,
+		pubsubTopic:  defaultTopic,
 		self:         selfID,
 		contentTopic: contentTopic,
 		nick:         nickname,
@@ -134,11 +137,7 @@ func (cr *Chat) Publish(ctx context.Context, message string) error {
 		//Timestamp: timestamp,
 	}
 	// TODO Error handling
-	// XXX: Somewhere it panics
-	// gonwaku > testpanic: runtime error: invalid memory address or nil pointer dereference
 	var _, _ = nwaku.PostWakuRelayMessage(cr.client, wakuMsg)
-	//XXX dont see this?
-	//log.Printf("NYI Publish", res, err2)
 
 	return nil
 }
@@ -165,11 +164,18 @@ func (cr *Chat) decodeMessage(wakumsg nwaku.WakuMessage) {
 }
 
 // readLoop pulls messages from the pubsub topic and pushes them onto the Messages channel.
+// TODO Improve polling with channels etc here
+// XXX This also means that we don't see our message straight away currently
 func (cr *Chat) readLoop() {
-	// TODO Replace with JSON RPC
-	// for value := range cr.sub.C {
-	// 	cr.decodeMessage(value.Message())
-	// }
+	for {
+		var wakuMessages, _ = nwaku.GetWakuRelayMessages(cr.client, cr.pubsubTopic)
+		// for value := range cr.sub.C {
+		for _, msg := range wakuMessages {
+			cr.decodeMessage(msg)
+		}
+
+		time.Sleep(2 * time.Second)
+	}
 }
 
 func (cr *Chat) displayMessages(messages []nwaku.WakuMessage) {
