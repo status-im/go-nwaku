@@ -19,12 +19,15 @@ JSON RPC spec that nim-waku exposes: https://rfc.vac.dev/spec/16/
 
 ## API calls used by chat2
 
-- DialPeer
-- AddStorePeer
-x Query
-x Subscribe
-x Publish
-- ListPeers
+- [x] Query
+- [x] Subscribe (subscribe+poll)
+- [x] Publish
+
+Peer management can be done by command line interface instead:
+
+- [] DialPeer
+- [] AddStorePeer
+- [] ListPeers
 
 ## Caveats
 
