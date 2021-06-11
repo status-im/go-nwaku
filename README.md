@@ -21,7 +21,12 @@ JSON RPC spec that nim-waku exposes: https://rfc.vac.dev/spec/16/
 
 - DialPeer
 - AddStorePeer
-- Query
-- Subscribe
-- Publish
+x Query
+x Subscribe
+x Publish
 - ListPeers
+
+## Caveats
+
+Assumes we can spawn a child process. In some environments, such as on iOS, this
+may not be permitted.
