@@ -5,6 +5,7 @@ build:
 
 all: build
 
+# TODO Integrate with nim-waku wrapper
 # TODO Assume we have libwaku.so already
 # libraries for dynamic linking of non-Nim objects
 EXTRA_LIBS_DYNAMIC := -L"$(CURDIR)/build" -lwaku -lm
