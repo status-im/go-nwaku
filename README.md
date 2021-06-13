@@ -31,5 +31,9 @@ Peer management can be done by command line interface instead:
 
 ## Caveats
 
+For the existing wrapping:
+
 Assumes we can spawn a child process. In some environments, such as on iOS, this
 may not be permitted.
+
+For wrapping as a shared library, see https://github.com/status-im/nim-waku/pull/614 for WIP
